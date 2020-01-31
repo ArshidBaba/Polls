@@ -1,4 +1,5 @@
 from rest_framework import generics
+from rest_framework import viewsets
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
@@ -33,3 +34,7 @@ class CreateVote(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class PollViewSet(viewsets.ModelViewSet):
+    queryset = Poll.objects.all()
+    serializer_class = PollSerializer
