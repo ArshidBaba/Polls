@@ -42,8 +42,8 @@ class PollViewSet(viewsets.ModelViewSet):
 
 class UserCreate(generics.CreateAPIView):
     serializer_class = UserSerializer
-    authentication_classes = ()
-    permission_classes = ()
+    authentication_classes = ('TokenAuthentication',)
+    permission_classes = ('IsAuthenticated',)
 
 class LoginView(APIView):
     permission_classes = ()
