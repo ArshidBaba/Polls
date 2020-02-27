@@ -24,6 +24,11 @@ class ChoiceList(generics.ListCreateAPIView):
         return queryset
     serializer_class = ChoiceSerializer
 
+    def post(self, request, *args, **kwargs):
+        poll = Poll.objects.get(pk=self.kwargs["pk"])
+        if not request.user == poll.created_by:
+            raise PermissionDenied("You cannot create choice for this poll.")
+        return super().post(request, *args, **kwargs)
 class CreateVote(APIView):
     serializer_class = VoteSerializer
 
@@ -59,6 +64,7 @@ class LoginView(APIView):
         username = request.data.get("username")
         password = request.data.get("password")
         user = authenticate(username=username, password=password)
+        print("testing", user)
         if user:
             return Response({"token": user.auth_token.key})
         else:
