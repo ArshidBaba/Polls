@@ -1,9 +1,10 @@
 from rest_framework import generics
 from rest_framework import viewsets
+from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404
-from rest_framework import status
 from django.contrib.auth import authenticate
 
 from .models import Poll, Choice
@@ -39,6 +40,12 @@ class CreateVote(APIView):
 class PollViewSet(viewsets.ModelViewSet):
     queryset = Poll.objects.all()
     serializer_class = PollSerializer
+
+    def destroy(self, request, *args, **kwargs):
+        poll = Poll.objects.get(pk=self.kwargs["pk"])
+        if not request.user == poll.created_by:
+            raise PermissionDenied("You cannot delete this poll.")
+        return super().destroy(request, *args, **kwargs)
 
 class UserCreate(generics.CreateAPIView):
     serializer_class = UserSerializer
